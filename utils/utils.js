@@ -32,6 +32,23 @@ function writeJson(target, source) {
     }
 }
 
+/*删除数据-json文件*/
+function delJson(target, userId) {
+    try{
+        const filePath = `${Path}${target}.json`;//文件路径
+        const res = fs.readFileSync(filePath).toString();
+        const resArr = JSON.parse(res);
+        resArr.map((res,index) => {
+            if(res.id === userId){
+                resArr.splice(index, index+1)
+            }
+        });
+        fs.writeFileSync(filePath, JSON.stringify(resArr));
+    }catch (err){
+        throw err
+    }
+}
+
 function responseData(status, data) {
     return {status: status, data: data};
 }
@@ -52,6 +69,7 @@ function UUID() {
 module.exports = {
     readJson,
     writeJson,
+    delJson,
     responseData,
     UUID
-}
+};
