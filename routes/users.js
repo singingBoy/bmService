@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-const {readJson, writeJson, responseData, UUID} = require('../utils/utils');
+const {readJson, writeJson, delJson, updateUserJson, responseData, UUID} = require('../utils/utils');
 
 /* 获取用户 */
 router.get('/', function(req, res, next) {
@@ -36,14 +36,21 @@ router.post('/', function(req, res, next) {
   if(!userName){
     res.send(responseData(0, null))
   }
+  const userId = UUID();
   //组装用户
   const user = {
-    id: UUID(),
+    id: userId,
     name: userName,
     createTime: new Date().getTime()
   };
+  //用户标签
+  const bookMarks = {
+    userId: userId,
+    list:[],
+  };
   try {
     writeJson('users',user);
+    writeJson('bookMarks', bookMarks);
     res.send(responseData(1, user))
   }catch (err){
     res.send(responseData(0, null))
@@ -51,5 +58,33 @@ router.post('/', function(req, res, next) {
 });
 
 /*删除用户*/
+router.delete('/', function (req, res, next) {
+  const id = req.param('id');
+  try{
+    delJson('users', id);
+    res.send(responseData(1, id));
+  }catch (err){
+    console.log(err.message);
+    res.send(responseData(0, null));
+  }
+});
+
+
+/**
+ * 更新用户
+ * Content-Type:application/x-www-form-urlencoded;charset=utf-8
+ * */
+router.put('/', function (req, res, next) {
+  const id = req.param('id');
+  console.log(req.body);
+  const user = {name: req.body.name};
+  try{
+    const resData = updateUserJson('users', id, user);
+    res.send(responseData(1, resData));
+  }catch (err){
+    console.log(err.message);
+    res.send(responseData(0, null));
+  }
+});
 
 module.exports = router;

@@ -19,6 +19,7 @@ function readJson(target) {
     });
 }
 
+
 /*写数据进json文件*/
 function writeJson(target, source) {
     try{
@@ -32,6 +33,52 @@ function writeJson(target, source) {
     }
 }
 
+/*删除数据 file删除文件,删除id*/
+function delJson(file, id) {
+    try{
+        const filePath = `${Path}${file}.json`;//文件路径
+        const res = fs.readFileSync(filePath).toString();
+        const resArr = JSON.parse(res);
+        resArr.map( (item, index)=>{
+            if(item.id == id){
+                resArr.splice(index, 1);
+            }
+        });
+        fs.writeFileSync(filePath, JSON.stringify(resArr));
+    }catch(err){
+        throw err
+    }
+}
+
+/*更新用户数据*/
+function updateUserJson(file, id, target) {
+    try {
+        const filePath = `${Path}${file}.json`;//文件路径
+        const res = fs.readFileSync(filePath).toString();
+        const resArr = JSON.parse(res);
+        let resData = undefined;
+        resArr.map( (item, index)=>{
+            if(item.id == id){
+                targetFor:
+                for(let targetKey of Object.keys(target)){
+                    for(let key of Object.keys(item)){
+                       if(targetKey == key){
+                           item[key] = target[targetKey];
+                           break targetFor;
+                       }
+                   }
+                }
+                resData = item;
+            }
+        });
+        fs.writeFileSync(filePath, JSON.stringify(resArr));
+        return resData;
+    }catch (err){
+        throw err
+    }
+}
+
+/*resful返回处理*/
 function responseData(status, data) {
     return {status: status, data: data};
 }
@@ -52,6 +99,8 @@ function UUID() {
 module.exports = {
     readJson,
     writeJson,
+    delJson,
+    updateUserJson,
     responseData,
     UUID
 }
