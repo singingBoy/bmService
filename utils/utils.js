@@ -19,7 +19,6 @@ function readJson(target) {
     });
 }
 
-
 /*写数据进json文件*/
 function writeJson(target, source) {
     try{
@@ -103,4 +102,4 @@ module.exports = {
     updateUserJson,
     responseData,
     UUID
-}
+};

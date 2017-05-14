@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-const {readJson, writeJson, delJson, updateUserJson, responseData, UUID} = require('../utils/utils');
+const {readJson, writeJson, responseData, UUID} = require('../utils/utils');
 
 /* 获取用户 */
 router.get('/', function(req, res, next) {
@@ -32,9 +32,10 @@ router.get('/', function(req, res, next) {
 /* 新增用户 */
 router.post('/', function(req, res, next) {
   //获取用户信息
-  const userName = req.param('name');
+  const userName = req.body.name;
   if(!userName){
-    res.send(responseData(0, null))
+    res.send(responseData(0, null));
+    return;
   }
   const userId = UUID();
   //组装用户
@@ -53,22 +54,25 @@ router.post('/', function(req, res, next) {
     writeJson('bookMarks', bookMarks);
     res.send(responseData(1, user))
   }catch (err){
+    console.log(err.message);
     res.send(responseData(0, null))
   }
 });
 
 /*删除用户*/
 router.delete('/', function (req, res, next) {
-  const id = req.param('id');
-  try{
-    delJson('users', id);
-    res.send(responseData(1, id));
+  const userId = req.param('userId');
+  if(!userId){
+    res.send(responseData(0, null))
+  }
+  try {
+    delJson('users',userId);
+    res.send(responseData(1, userId))
   }catch (err){
     console.log(err.message);
-    res.send(responseData(0, null));
+    res.send(responseData(0, null))
   }
-});
-
+})
 
 /**
  * 更新用户
